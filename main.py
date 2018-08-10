@@ -111,8 +111,8 @@ Test_data.load_data("/Users/simonboivin/Documents/BelgiumTSC/Testing")
 Train_data.resize((28,28))
 Test_data.resize((28,28))
 
-Train_data.togray()
-Test_data.togray()
+#Train_data.togray()
+#Test_data.togray()
 
 Train_data.one_hot_encode()
 Test_data.one_hot_encode()
@@ -123,18 +123,18 @@ Test_data.one_hot_encode()
 #
 
 num_output = Train_data.nb_labels
-x = tf.placeholder(tf.float32,shape=[None,Train_data.shape[0],Train_data.shape[1]])
+x = tf.placeholder(tf.float32,shape=[None,Train_data.shape[0],Train_data.shape[1],3])
 y_true = tf.placeholder(tf.float32,shape=[None,num_output])
-x_image = tf.reshape(x,[-1,Train_data.shape[0],Train_data.shape[1],1])
+x_image = tf.reshape(x,[-1,Train_data.shape[0],Train_data.shape[1],3])
 
-convo_1 = convolutional_layer(x_image,shape=[5,5,1,32]) #input 1, output 3
+convo_1 = convolutional_layer(x_image,shape=[5,5,3,32]) #input 1, output 3
 convo_1_pooling = max_pool_2by2(convo_1)
 
-convo_2 = convolutional_layer(convo_1_pooling,shape=[5,5,32,64]) #input 32, output 64
+convo_2 = convolutional_layer(convo_1_pooling,shape=[5,5,32,3*64]) #input 32, output 64
 convo_2_pooling = max_pool_2by2(convo_2)
 
 final_size = convo_2_pooling.get_shape()[1]*convo_2_pooling.get_shape()[2]
-convo_2_flat = tf.reshape(convo_2_pooling,[-1,final_size*64])
+convo_2_flat = tf.reshape(convo_2_pooling,[-1,final_size*64*3])
 full_layer_one = tf.nn.relu(normal_full_layer(convo_2_flat,1024))
 
 #dropout
