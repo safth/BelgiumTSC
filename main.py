@@ -50,9 +50,8 @@ class Data():
         out[range(n), self.labels]=1
         self.labels = out
 
-
+        #methode qui donne des batch de datas
     def next_batch(self, batch_size=100):
-        # Note that the 100 dimension in the reshape call is set by an assumed batch size of 100
         x = self.images[self.i:self.i+batch_size]
         y = self.labels[self.i:self.i+batch_size]
         self.i = (self.i + batch_size) % len(self.images)
@@ -156,20 +155,20 @@ train =optimizer.minimize(cross_entropy)
 init = tf.global_variables_initializer()
 
 
-steps = 5000
+epoch = 400
+batch_size=100
 
 with tf.Session() as sess:
     sess.run(init)
-    for i in range(steps):
+    for e in range(epoch):
+        for step in range(int(len(Train_data.images)/batch_size)):
 
-        batch_x, batch_y = Train_data.next_batch(100)
+            batch_x, batch_y = Train_data.next_batch(batch_size)
 
-        sess.run(train,feed_dict={x:batch_x,y_true:batch_y,hold_prob:0.5})
-        if i%100 == 0:
-            print("on step: {}".format(i))
-            print("Accuracy:")
-            matches = tf.equal(tf.argmax(y_pred,1),tf.argmax(y_true,1))
-            acc = tf.reduce_mean(tf.cast(matches,tf.float32))
+            sess.run(train,feed_dict={x:batch_x,y_true:batch_y,hold_prob:0.5})
 
-            print(sess.run(acc,feed_dict={x:Test_data.images,y_true:Test_data.labels,hold_prob:1.0}))
-            print('\n')
+        matches = tf.equal(tf.argmax(y_pred,1),tf.argmax(y_true,1))
+        acc = tf.reduce_mean(tf.cast(matches,tf.float32))
+        print("on epoch: {}".format(e))
+        print("Accuracy:")
+        print(sess.run(acc,feed_dict={x:Test_data.images,y_true:Test_data.labels,hold_prob:1.0}))
