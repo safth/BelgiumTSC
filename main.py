@@ -104,8 +104,8 @@ def normal_full_layer(input_layer,size):
 Train_data = Data()
 Test_data = Data()
 
-Train_data.load_data("/Users/simonboivin/Documents/BelgiumTSC/Training")
-Test_data.load_data("/Users/simonboivin/Documents/BelgiumTSC/Testing")
+Train_data.load_data("Training")
+Test_data.load_data("Testing")
 
 
 Train_data.resize((28,28))
