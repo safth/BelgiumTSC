@@ -140,52 +140,29 @@ init = tf.global_variables_initializer()
 batch_size = 100
 epochs = 2000
 init = tf.global_variables_initializer()
-saver = tf.train.Saver(var_list=g_vars)
 # Save a sample per epoch
+
+
+
+###
+
+
+saver = tf.train.Saver(var_list=g_vars)
+
 samples = []
-
-
-
-
 with tf.Session() as sess:
 
-    sess.run(init)
+    saver.restore(sess,'./models/2000_epoch_model.ckpt')
 
-    # Recall an epoch is an entire run through the training data
-    for e in range(epochs):
-        # // indicates classic division
-        batch_size=100
-        num_batch = int(len(Train_data.images)/batch_size)
-
-        for i in range(num_batch):
-
-            # Grab batch of images
-            batch, _ = Train_data.next_batch(batch_size)
-            batch_size = (batch.shape[0])
-
-            # Get images, reshape and rescale to pass to D
-            batch_images = batch.reshape((batch_size, 784))
-            batch_images = batch_images*2 - 1
-
-            # Z (random latent noise data for Generator)
-            # -1 to 1 because of tanh activation
-            batch_z = np.random.uniform(-1, 1, size=(batch_size, 100))
-
-            # Run optimizers, no need to save outputs, we won't use them
-            _ = sess.run(D_trainer, feed_dict={real_images: batch_images, z: batch_z})
-            _ = sess.run(G_trainer, feed_dict={z: batch_z})
-
-
-        print("Currently on Epoch {} of {} total...".format(e+1, epochs))
-
-        # Sample from generator as we're training for viewing afterwards
-        sample_z = np.random.uniform(-1, 1, size=(1, 100))
-        gen_sample = sess.run(generator(z ,reuse=True),feed_dict={z: sample_z})
+    for x in range(12):
+        sample_z = np.random.uniform(-1,1,size=(1,100))
+        gen_sample = sess.run(generator(z,reuse=True),feed_dict={z:sample_z})
 
         samples.append(gen_sample)
+plt.figure()
+for i in range(12):
+    plt.subplot(4,3,i+1)
+    plt.imshow(samples[i].reshape(28,28),cmap='Greys')
+    plt.axis('off')
 
-    saver.save(sess, './models/2000_epoch_model.ckpt')
-
-
-plt.imshow(samples[49].reshape(28,28),)
 plt.show()
